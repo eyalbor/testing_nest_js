@@ -10,19 +10,23 @@ import {
   Query,
   Param,
   Body,
-  HttpException,
   ForbiddenException,
   UseFilters,
   ParseIntPipe,
+  UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
 import { ApiTags } from '@nestjs/swagger';
 import { HttpExceptionFilter } from '../../common/exceptions/http-exception.filter';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/metadata/user-types.decorator';
 
 @ApiTags('cats')
 @Controller('cats')
+@UseGuards(RolesGuard)
 export class CatsController {
   constructor(private catService: CatsService) {}
 
@@ -31,6 +35,12 @@ export class CatsController {
   @Post()
   async create(@Body() createCatDto: CreateCatDto) {
     return this.catService.create(createCatDto);
+  }
+
+  @Delete('delete/:id')
+  @Roles('admin')
+  async delete(@Param('id') id: string) {
+    return this.catService.delete(id);
   }
 
   @Get()

@@ -18,4 +18,9 @@ export class CatsService {
   findOne(name: string): Cat {
     return this.cats.find((cat) => cat.name === name);
   }
+
+  delete(name: string): Cat{
+    const index = this.cats.findIndex((cat) => cat.name === name);
+    return this.cats.splice(index, 1)[0];
+  }
 }
